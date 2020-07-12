@@ -57,8 +57,8 @@ class PolarityClassifier:
         """
         score = 0
         for token in self.stokens:
-            if self.lexicon.has_key(token) \
-               and self.lexicon[token].has_key('emoticon'):
+            if token in self.lexicon \
+               and 'emoticon' in  self.lexicon[token]:
                if self.lexicon[token]['priorpolarity'] == "negative":
                     score = -2
                else:
@@ -120,14 +120,14 @@ class PolarityClassifier:
         
         
         if self.debug:
-            print "\n[*] --------------------RESULTS----------------------"
-            print Tcolors.ADD + " FEATURE WORDS:", self.feature_words        
-            print Tcolors.ADD + " POLAR EXPRESSIONS FOUND:", self.polar_expressions
-            print Tcolors.ADD + " POLAR WEIGHTS:", self.polar_with_score
-            print Tcolors.ADD + " EMOTICONS:", self.emoticons
-            print Tcolors.ADD + " EMOTION WEIGHTS:", self.emotions_score
-            print Tcolors.ADD + " PREDICTION: ", prediction, ", WITH CONFIDENCE: ", score
-            print Tcolors.ADD + " NORMALIZED CONFIDENCE: ", score/len(self.words)
+            print ("\n[*] --------------------RESULTS----------------------")
+            print (Tcolors.ADD + " FEATURE WORDS:", self.feature_words)        
+            print (Tcolors.ADD + " POLAR EXPRESSIONS FOUND:", self.polar_expressions)
+            print (Tcolors.ADD + " POLAR WEIGHTS:", self.polar_with_score)
+            print (Tcolors.ADD + " EMOTICONS:", self.emoticons)
+            print (Tcolors.ADD + " EMOTION WEIGHTS:", self.emotions_score)
+            print (Tcolors.ADD + " PREDICTION: ", prediction, ", WITH CONFIDENCE: ", score)
+            print (Tcolors.ADD + " NORMALIZED CONFIDENCE: ", score/len(self.words))
         
         self.words = [w for w in self.words if w != '']
         return prediction, score, score/len(self.words) #normalizedScore
@@ -143,12 +143,12 @@ class PolarityClassifier:
             word = word.lower()
             if word in self.lexicon:
                 if self.lexicon[word]['priorpolarity'] == "positive":
-                    if not self.feature_words.has_key(word):                        
+                    if not word in  self.feature_words:                        
                         self.feature_words[word] = 1
                     else:
                         self.feature_words[word] += 1
                 elif self.lexicon[word]['priorpolarity'] == "negative":
-                    if not self.feature_words.has_key(word):                        
+                    if not word in self.feature_words:                        
                         self.feature_words[word] = -1
                     else:
                         self.feature_words[word] -= 1
@@ -159,7 +159,7 @@ class PolarityClassifier:
         if self.words.index(polar) > 0:
             previous_word = self.words[self.words.index(polar) - 1]
             
-            if self.lexicon.has_key(previous_word) and self.lexicon[previous_word]["type"]=="strongsubj" \
+            if previous_word in self.lexicon and self.lexicon[previous_word]["type"]=="strongsubj" \
                and 'adj' in self.lexicon[previous_word]["pos1"]:
                 return True
         return False
@@ -210,13 +210,13 @@ class PolarityClassifier:
     
     def polarity_shifting(self, polar, words):
         for word in words:
-            if (self.lexicon.has_key(word) and self.lexicon[word]["type"]=="strongsubj" \
+            if (word in self.lexicon and self.lexicon[word]["type"]=="strongsubj" \
                and self.lexicon[word]["priorpolarity"] != self.lexicon[polar]["priorpolarity"] \
                and self.lexicon[word]["priorpolarity"]!="neutral") or \
                word.endswith("n't"):
                 # reverse polarity of polar
                 if self.debug:
-                    print "[!] NEGATION WORD FOUND: ",word
+                    print ("[!] NEGATION WORD FOUND: ",word)
                 return True
         
         return False                   
@@ -250,7 +250,7 @@ class PolarityClassifier:
             word = word.lower()
             words = [word, stem(word)]
             for w in words: 
-                if self.feature_words.has_key(w) and (matched_tag in self.lexicon[w]["pos1"] \
+                if w in self.feature_words and (matched_tag in self.lexicon[w]["pos1"] \
                                                          or self.lexicon[w]["pos1"][0] == "anypos" \
                                                          or matched_tag == "anypos"): 
                     self.polar_expressions.append(w)

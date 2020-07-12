@@ -1,16 +1,3 @@
-####################################################################
-# Licence:    Creative Commons (see COPYRIGHT)                     #
-# Authors:    Nikolaos Pappas, Georgios Katsimpras                 #
-#             {nik0spapp, gkatsimpras}@gmail.com                   # 
-# Supervisor: Efstathios stamatatos                                #
-#             stamatatos@aegean.gr                                 #
-# University of the Aegean                                         #
-# Department of Information and Communication Systems Engineering  #
-# Information Management Track (MSc)                               #
-# Karlovasi, Samos                                                 #
-# Greece                                                           #
-####################################################################
-
 import os
 import sys
 import nltk
@@ -21,7 +8,7 @@ from hp_classifiers import HpObj, HpSubj
 from polarity import PolarityClassifier  
 from replacer import RepeatReplacer
 from terminal_colors import Tcolors
-import pandas as pd
+import pandas as pd #一種好用的資料存取型態
 import traceback
 
 DEBUG = False
@@ -60,8 +47,8 @@ class Sentiment:
                 clean_text = self.normalize(clean_text)
                 try:
                     sentences = self.sentence_tokenizer.tokenize(clean_text)
-                except Exception, e:
-                    print "Hitting Error"
+                except:
+                    print("Hitting Error")
                     traceback.print_exc()
                     return {}
                 sentiments = [] 
@@ -72,9 +59,9 @@ class Sentiment:
                            'negative':{'count' : 0, 'score' : 0, 'nscore' : 0}}
                 
                 print
-                print Tcolors.ACT + " Checking block of text:"
+                print(Tcolors.ACT + " Checking block of text:")
                 for i, sentence in enumerate(sentences):
-                    print "[" + str(i+1) + "] " + sentence
+                    print("[" + str(i+1) + "] " + sentence)
                 for i, sentence in enumerate(sentences):
                     # Proceed to subjectivity classification (bootstrapping procedure).
                     # (This step could be skipped in case you deal with subjective sentences only.)
@@ -90,23 +77,23 @@ class Sentiment:
                             next = sentences[i+1]
                         previous = sentences[i-1] 
                      
-                    if DEBUG: print Tcolors.ACT + " Analyzing subjectivity..." 
+                    if DEBUG: print(Tcolors.ACT + " Analyzing subjectivity...")
                     result = self.bootstrapping.classify(sentence, previous, next) 
                     if result is None:
                         res = 'Not found!'
                     else:
                         res = result
                     if DEBUG:
-                        print Tcolors.RES + Tcolors.OKGREEN + " " + res + Tcolors.ENDC
+                        print(Tcolors.RES + Tcolors.OKGREEN + " " + res + Tcolors.ENDC)
                         print
                     
                     # If sentence is subjective 
                     if result == 'subjective' or result is None:
                         # Proceed to polarity classification
-                        if DEBUG: print Tcolors.ACT + " Analyzing sentiment..."
+                        if DEBUG: print(Tcolors.ACT + " Analyzing sentiment...")
                         polarity_classifier = PolarityClassifier(self.pos_tagger, self.lexicon, debug=DEBUG)
                         sentiment, score, nscore = polarity_classifier.classify(sentence)
-                        if DEBUG: print Tcolors.RES + Tcolors.OKGREEN + " " + sentiment + Tcolors.ENDC
+                        if DEBUG: print(Tcolors.RES + Tcolors.OKGREEN + " " + sentiment + Tcolors.ENDC)
                     # If sentence is objective
                     elif result == 'objective':
                         sentiment = 'neutral'  
@@ -124,40 +111,40 @@ class Sentiment:
                     nscores.append(nscore)
                     
                     # Update score
-                    if results.has_key(sentiment):
+                    if sentiment in results:
                         results[sentiment]['nscore'] += nscore
                         results[sentiment]['score'] += score
                         results[sentiment]['count'] += 1 
                           
                 print       
-                print Tcolors.ACT + " Overall sentiment analysis:"
-                print Tcolors.BGH
-                print " Parts: ", len(sentences)
-                print " Sentiments: ", sentiments
-                print " Scores: ", scores 
-                print " Results: ", "},\n\t    ".join((str)(results).split("}, "))
-                print Tcolors.C
+                print(Tcolors.ACT + " Overall sentiment analysis:")
+                print(Tcolors.BGH)
+                print(" Parts: ", len(sentences))
+                print(" Sentiments: ", sentiments)
+                print(" Scores: ", scores )
+                print(" Results: ", "},\n\t    ".join((str)(results).split("}, ")))
+                print(Tcolors.C)
 
                 pcount = results['positive']['count']
                 ncount = results['negative']['count'] 
                 total = len(sentences)
-                print Tcolors.BG
+                print(Tcolors.BG)
                 subjective = 0
                 objective = 0
                 subjective = (float)(pcount + ncount)*100 / total
                 objective = 100 - ((float)(pcount + ncount)*100 / total)
-                print " subjective".ljust(16,"-") + "> %.2f" % ((float)(pcount + ncount)*100 / total) + "%"
-                print " objective".ljust(16,"-") + "> %.2f" % (100 - ((float)(pcount + ncount)*100 / total)) + "%"
-                print Tcolors.C
-                print Tcolors.BGGRAY
+                print(" subjective".ljust(16,"-") + "> %.2f" % ((float)(pcount + ncount)*100 / total) + "%")
+                print(" objective".ljust(16,"-") + "> %.2f" % (100 - ((float)(pcount + ncount)*100 / total)) + "%")
+                print(Tcolors.C)
+                print(Tcolors.BGGRAY)
                 polarity_scores = {'postive': 0, 'neutral': 0, 'negative': 0}
                 for sense in results.keys():
                     count = results[sense]['count']
                     percentage = (float)(count) * 100 / (len(sentences))
                     polarity_scores[sense] = percentage
-                    print " " +sense.ljust(15,"-")+"> %.2f" % (percentage) + "%"
+                    print(" " +sense.ljust(15,"-")+"> %.2f" % (percentage) + "%")
                   
-                print Tcolors.C 
+                print(Tcolors.C) 
                 ssum = sum(scores)
                 confidence = " (%.2f, %.2f)" % (ssum,sum(nscores))
                 final_sent = ""
@@ -167,15 +154,15 @@ class Sentiment:
 
                 # Print total sentiment score and normalized sentiment score
                 if ssum > 0 and pos:
-                    print Tcolors.RES + Tcolors.OKGREEN + " positive" + confidence + Tcolors.C
+                    print(Tcolors.RES + Tcolors.OKGREEN + " positive" + confidence + Tcolors.C)
                     final_sent = "positive"
                 elif ssum == 0:
-                    print Tcolors.RES + Tcolors.OKGREEN +  " neutral" + confidence + Tcolors.C
+                    print(Tcolors.RES + Tcolors.OKGREEN +  " neutral" + confidence + Tcolors.C)
                     final_sent = "neutral"
                 else:
-                    print Tcolors.RES + Tcolors.OKGREEN +  " negative" + confidence + Tcolors.C
+                    print(Tcolors.RES + Tcolors.OKGREEN +  " negative" + confidence + Tcolors.C)
                     final_sent = "negative"
-                print Tcolors.C
+                print(Tcolors.C)
                 
                 # Store results
                 total_result_hash = {'sentences' : sentences,
@@ -189,7 +176,7 @@ class Sentiment:
                                      'neutral'   : polarity_scores['neutral'],
                                      'negative'  : polarity_scores['negative'],
                                       'final' : {final_sent:{'score':ssum,'nscore':sum(nscores)}}} 
-                print "total_result_hash" + str(total_result_hash['objective']) + str(total_result_hash['positive']) + str(total_result_hash['negative']) + str(total_result_hash['neutral'])
+                print("total_result_hash" + str(total_result_hash['objective']) + str(total_result_hash['positive']) + str(total_result_hash['negative']) + str(total_result_hash['neutral']))
         # Train SVM classifier
         # self.train_svm()
         return total_result_hash
@@ -242,10 +229,10 @@ if __name__ == '__main__':
     combined_stock_data['Para'] = combined_stock_data['Top1']
     for x in range(2, 26):
         combined_stock_data['Para'] += combined_stock_data['Top'+str(x)]
-
+    #把一天的內文全部集中在Para列下
     for index, sentence in combined_stock_data['Para'].iteritems():
-        sentence_polarity_infomap = sentiment.analyze([sentence])
-        print "polarity" + str(sentence_polarity_infomap)
+        sentence_polarity_infomap = sentiment.analyze([sentence]) #轉換paragraph為五大指標
+        print("polarity" + str(sentence_polarity_infomap))
         if not (sentence_polarity_infomap == {}):
             combined_stock_data.at[index, 'Subjectivity'] = sentence_polarity_infomap['subjective']
             combined_stock_data.at[index, 'Objectivity'] = sentence_polarity_infomap['objective']
@@ -259,14 +246,14 @@ if __name__ == '__main__':
         combined_stock_data['Neutral'][index] = sentence_polarity_infomap['neutral']
         combined_stock_data['Negative'][index] = sentence_polarity_infomap['negative']
         """
-    print combined_stock_data['Subjectivity'].shape
-    print combined_stock_data['Objectivity'].shape
-    print combined_stock_data['Positive'].shape
-    print combined_stock_data['Neutral'].shape
-    print combined_stock_data['Negative'].shape
-    print combined_stock_data['Subjectivity'].head(20)
-    print combined_stock_data['Objectivity'].head(20)
-    print combined_stock_data['Positive'].head(20)
-    print combined_stock_data['Neutral'].head(20)
-    print combined_stock_data['Negative'].head(20)
+    print(combined_stock_data['Subjectivity'].shape)
+    print(combined_stock_data['Objectivity'].shape)
+    print(combined_stock_data['Positive'].shape)
+    print(combined_stock_data['Neutral'].shape)
+    print(combined_stock_data['Negative'].shape)
+    print(combined_stock_data['Subjectivity'].head(20))
+    print(combined_stock_data['Objectivity'].head(20))
+    print(combined_stock_data['Positive'].head(20))
+    print(combined_stock_data['Neutral'].head(20))
+    print(combined_stock_data['Negative'].head(20))
     combined_stock_data.to_csv('combined_stock_data.csv')

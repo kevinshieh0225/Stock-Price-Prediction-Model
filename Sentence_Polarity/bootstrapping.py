@@ -25,7 +25,6 @@ class Bootstrapping:
         (opinionated) expressions from unannotated data. The learned
         patterns are used to identify more subjective sentences that simple 
         high precision classifiers can't recall.
-
         Related paper:
         E. Riloff and J. Wiebe. Learning extraction patterns for subjective 
         expressions. In Proceedings of the 2003 conference on Empirical methods 
@@ -60,9 +59,9 @@ class Bootstrapping:
         self.filename = "stored/learned_patterns"
         try:
             self.learned_patterns = pickle.load(open(self.filename))
-            print Tcolors.ADD + Tcolors.OKBLUE + " Loaded existing pattern knowledge!" + Tcolors.ENDC 
+            print(Tcolors.ADD + Tcolors.OKBLUE + " Loaded existing pattern knowledge!" + Tcolors.ENDC)
         except:
-            print Tcolors.ACT + Tcolors.RED + " Existing pattern knowledge not found." + Tcolors.ENDC
+            print( Tcolors.ACT + Tcolors.RED + " Existing pattern knowledge not found." + Tcolors.ENDC)
             self.learned_patterns = {}
              
         # Part Of Speech Sequential Tagger (Unigram->Bigram->Trigram) 
@@ -88,7 +87,7 @@ class Bootstrapping:
         self.subjective = self.hp_subj.classify(sentence) 
         # STEP 1: Get help from learned patterns
         if not self.subjective:
-            if self.debug: print Tcolors.ACT + " Training pattern based classifier...\n"
+            if self.debug: print (Tcolors.ACT + " Training pattern based classifier...\n")
             self.pb_subj.train(self.learned_patterns)
             found, self.subjective, obj = self.pb_subj.classify(sentence)
         
@@ -122,9 +121,9 @@ class Bootstrapping:
         tags = []
         words = []
         if self.debug:
-            print Tcolors.ACT + " Performing part of speech (POS) tagging..." + Tcolors.WARNING 
-            print tagged_sentence
-            print Tcolors.ENDC
+            print (Tcolors.ACT + " Performing part of speech (POS) tagging..." + Tcolors.WARNING )
+            print (tagged_sentence)
+            print (Tcolors.ENDC)
         for (w,tag) in tagged_sentence:
             if tag is None:
                 tag = ""
@@ -202,8 +201,8 @@ class Bootstrapping:
          
         if matched == len(form):
             if self.debug:
-                print Tcolors.ACT + Tcolors.RED + " Form triggered: ", form, Tcolors.ENDC
-                print "Pattern learned:", learned_pattern
+                print (Tcolors.ACT + Tcolors.RED + " Form triggered: ", form, Tcolors.ENDC)
+                print ("Pattern learned:", learned_pattern)
             return True, learned_pattern
         else:
             return False, None
@@ -224,14 +223,14 @@ class Bootstrapping:
             cur_subj_freq = 1 
         pkey = pattern
         pkey = re.sub(r"<subj> | <np>| <dobj>","",pkey) 
-        if self.learned_patterns.has_key(pattern):
+        if pattern in self.learned_patterns:
             subj_freq = self.learned_patterns[pattern]['subj_freq'] + cur_subj_freq
             freq = self.learned_patterns[pattern]['freq'] + 1
             prob = (float)(subj_freq)/(float)(freq)
             self.learned_patterns[pattern]['prob'] = prob
             self.learned_patterns[pattern]['subj_freq'] = subj_freq
             self.learned_patterns[pattern]['freq'] = freq
-            if self.debug: print Tcolors.ADD + Tcolors.HEADER + " Updating pattern:", pattern, Tcolors.ENDC  
+            if self.debug: print (Tcolors.ADD + Tcolors.HEADER + " Updating pattern:", pattern, Tcolors.ENDC  )
         else:
             subj_freq = 0
             freq = 1
@@ -242,7 +241,7 @@ class Bootstrapping:
                                            'freq' : freq,
                                            'subj_freq' : subj_freq,
                                            'prob' : prob}  
-            if self.debug: print Tcolors.ADD + Tcolors.CYAN + " Learning pattern:", pattern, Tcolors.ENDC  
+            if self.debug: print (Tcolors.ADD + Tcolors.CYAN + " Learning pattern:", pattern, Tcolors.ENDC  )
             
     def store_knowledge(self): 
         """
@@ -258,10 +257,10 @@ class Bootstrapping:
             patterns from the triggering.
         """   
         patterns = []
-        if self.debug: print Tcolors.ACT + " Triggering subjective syntactic forms..." 
+        if self.debug: print (Tcolors.ACT + " Triggering subjective syntactic forms..." )
         for key in self.syntactic_forms.keys():
             syntactic_forms = self.syntactic_forms[key]
-            if self.debug: print Tcolors.PROC + Tcolors.GRAY + " Checking form group " + key + "..." + Tcolors.ENDC
+            if self.debug: print (Tcolors.PROC + Tcolors.GRAY + " Checking form group " + key + "..." + Tcolors.ENDC)
             
             for form in syntactic_forms:  
                 for i,tag in enumerate(tags): 
@@ -269,14 +268,14 @@ class Bootstrapping:
                        or tag.find("PR") > -1: 
                         triggered, pattern = self.match_until_next_nn(i, tags, words, form, key) 
                         if pattern is not None and pattern not in patterns:
-                            if self.debug: print Tcolors.ACT + Tcolors.RED + " Form triggered: ", form, Tcolors.ENDC
+                            if self.debug: print (Tcolors.ACT + Tcolors.RED + " Form triggered: ", form, Tcolors.ENDC)
                             patterns.append(pattern)
         for pattern in patterns:
             self.proccess_learned_pattern(pattern)
         if self.debug:
-            print Tcolors.OKBLUE
-            print self.learned_patterns    
-            print Tcolors.ENDC
+            print (Tcolors.OKBLUE)
+            print (self.learned_patterns)    
+            print (Tcolors.ENDC)
         self.store_knowledge()
 
     def train(self, data):
@@ -298,6 +297,4 @@ if __name__ == "__main__":
     tagger = SequentialTagger()
     bootstrapping = Bootstrapping(hp_obj, hp_subj, tagger)
     if self.debug:
-        print bootstrapping.classify(sys.argv[1])
-        
-        
+        print (bootstrapping.classify(sys.argv[1]))

@@ -49,7 +49,7 @@ class Lexicon:
                     word_value = attr.split("=")[1]
                     attributes[index] = []
                     break
-            if self.words.has_key(word_value):
+            if word_value in self.words.keys():
                 for attr in attributes:
                     if attr != []:
                         arr = attr.split("=")

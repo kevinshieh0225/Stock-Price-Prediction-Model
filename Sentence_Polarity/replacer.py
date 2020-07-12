@@ -27,7 +27,7 @@ class RepeatReplacer(object):
      
     def replace(self, word):
        check = re.sub(r'\!|;|\||\.|\?|,|:|"|\)|\(','',word)
-       if self.lexicon.has_key(word) and self.lexicon[word].has_key('emoticon'):
+       if word in self.lexicon and 'emoticon' in self.lexicon[word]:
           return word
        if wordnet.synsets(check):  
          if word == check:
@@ -44,6 +44,6 @@ class RepeatReplacer(object):
 if __name__ == '__main__': 
     rr = RepeatReplacer()
     example = "sorrryyyyyyyyyyy"
-    print "Before: " + example
+    print ("Before: " + example)
     rr.replace(example)
-    print "After: " + example
+    print ("After: " + example)

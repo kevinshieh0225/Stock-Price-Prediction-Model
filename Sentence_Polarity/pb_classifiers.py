@@ -80,16 +80,16 @@ class PbSubj:
             objective = False
             subjective = False  
         else:
-            if self.debug: print matched_pattern
+            if self.debug: print (matched_pattern)
             random.seed()
             if random.uniform(0,1) <= matched_pattern['prob']:
                 subjective = True
                 objective = False
-                if self.debug: print "Probability: " + (str)(matched_pattern['prob'])
+                if self.debug: print ("Probability: " + (str)(matched_pattern['prob']))
             else:
                 objective = True
                 subjective = False 
-                if self.debug: print "Probability: " + (str)(1 - matched_pattern['prob'])
+                if self.debug: print ("Probability: " + (str)(1 - matched_pattern['prob']))
         return found, subjective, objective
         
         
@@ -136,7 +136,7 @@ class PbSubj:
             using the thresholds t1 and t2.
         """
         self.ss_patterns = {}
-        for pattern in self.learned_patterns.keys():
+        for pattern in list(self.learned_patterns):
             freq = self.learned_patterns[pattern]['freq']
             prob = self.learned_patterns[pattern]['prob']
             if freq >= self.t1_threshold and prob >= self.t2_threshold: 
@@ -145,12 +145,12 @@ class PbSubj:
             elif freq > 5 and freq < ((self.t1_threshold*3) / 4):
             	del(self.learned_patterns[pattern])
             
-        sorted_ss = sorted(self.ss_patterns.iteritems(),key=lambda x: x[1]['prob'], reverse=True)
+        sorted_ss = sorted(self.ss_patterns.items(),key=lambda x: x[1]['prob'], reverse=True)
         self.sorted_ss_patterns = sorted_ss 
         for (s,v) in sorted_ss:
             title = (Tcolors.OKGREEN+s+Tcolors.ENDC+" ").ljust(70,'-') 
             pbs = (str)(v['freq'])+"/" + Tcolors.CYAN + (str)(v['prob']) + Tcolors.ENDC
-            if self.debug: print title + "------------> " + pbs
+            if self.debug: print (title + "------------> " + pbs)
         if self.debug: print
         if len(sorted_ss) > self.pl_threshold:
         	self.t1_threshold += 1

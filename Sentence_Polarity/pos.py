@@ -31,11 +31,11 @@ class SequentialTagger:
         self.filename = "stored/ubt_tagger.classifier"
         try: 
             self.ubt_tagger = pickle.load(open(self.filename)) 
-            print Tcolors.ADD + Tcolors.OKBLUE + " Loaded existing UBT tagger!" + Tcolors.ENDC 
+            print (Tcolors.ADD + Tcolors.OKBLUE + " Loaded existing UBT tagger!" + Tcolors.ENDC)
         except:
-            print Tcolors.ACT + Tcolors.RED + " Existing UBT tagger not found." + Tcolors.ENDC
-            print "Path:",  "stored/ubt_tagger.classifier"
-            print "Training..."
+            print (Tcolors.ACT + Tcolors.RED + " Existing UBT tagger not found." + Tcolors.ENDC)
+            print ("Path:",  "stored/ubt_tagger.classifier")
+            print ("Training...")
             brown_review_all = nltk.corpus.brown.tagged_sents()
             brown_review_sents = nltk.corpus.brown.tagged_sents(categories=['reviews'])
             brown_lore_sents = nltk.corpus.brown.tagged_sents(categories=['lore'])

@@ -39,14 +39,14 @@ class SvmClassifier:
         self.lexicon = lexicon
         self.num_features = len(self.lexicon.words.keys())
         try:
-            print "Loading existing SVM..."
+            print ("Loading existing SVM...")
             features = pickle.load(open(self.feature_data))
             labels = pickle.load(open(self.label_data))
             sparsedata = SparseDataSet(features, L=labels) 
             self.svm_classifier = loadSVM(PATH + "/learning/stored/svm.classifier",sparsedata)
         except Exception as e:
-            print e
-            print "Existing SVM not found!"
+            print (e)
+            print ("Existing SVM not found!")
             self.svm_classifier = svm.SVM(self.kernel)
         self.accuracy = None
         self.predicted_labels = None
@@ -58,11 +58,11 @@ class SvmClassifier:
     def classify(self, sentences, labels):
         self.test_set = self.compute_features(sentences)
         print
-        print Tcolors.ACT + " Classifying instance with SVM: " + Tcolors.RED + sentences[0] + Tcolors.C
-        print Tcolors.HEADER
+        print (Tcolors.ACT + " Classifying instance with SVM: " + Tcolors.RED + sentences[0] + Tcolors.C)
+        print (Tcolors.HEADER)
         test_data = SparseDataSet(self.test_set, L=labels)
         self.results = self.svm_classifier.test(test_data)
-        print Tcolors.C 
+        print (Tcolors.C) 
         return self.results
     
     def compute_features(self, sentences): 
@@ -81,8 +81,8 @@ class SvmClassifier:
         pass
     
     def print_stats(self): 
-        print "[*] SVM Classifier ACCURACY: ", self.accuracy
-        print "[*] SVM Classifier PREDICTED_LABEL: ", self.predicted_labels[0]
+        print ("[*] SVM Classifier ACCURACY: ", self.accuracy)
+        print ("[*] SVM Classifier PREDICTED_LABEL: ", self.predicted_labels[0])
     
     def stats(self):
         self.accuracy = self.results.getSuccessRate()
@@ -98,13 +98,13 @@ class SvmClassifier:
         self.svm_classifier.save(PATH + "/learning/stored/svm.classifier")
         
     def train(self, training_set, labels):
-        print Tcolors.ACT + " Training SVM with chaining..."
+        print (Tcolors.ACT + " Training SVM with chaining...")
         features = self.compute_features(training_set) 
         data = SparseDataSet(features, L=labels) 
-        print Tcolors.CYAN
+        print (Tcolors.CYAN)
         self.training_set = data 
         self.svm_classifier.train(data)     
         self.save(data,features,labels)
-        print Tcolors.C
+        print (Tcolors.C)
      
         

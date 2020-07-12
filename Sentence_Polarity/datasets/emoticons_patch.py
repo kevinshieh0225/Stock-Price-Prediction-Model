@@ -28,12 +28,12 @@ def patch_emoticons():
     
     for line in lines:
         if line.startswith("positive"):
-            print "Parsing Positives...." 
+            print ("Parsing Positives...." )
             p_flag = True    
             n_flag = False
             
         elif line.startswith("negative"):
-            print "Parsing Negatives...."
+            print ("Parsing Negatives....")
             n_flag = True
             p_flag = False
             
